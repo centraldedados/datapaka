@@ -34,9 +34,9 @@ if not os.path.exists('data') or not os.path.isdir('data'):
     
 # Does datapackage.json exist?
 if os.path.exists('datapackage.json'):
-    result = raw_input("There already is a datapackage.json file. Delete and create new? [n] ")
-    if result not in ("y", "Y"):
-        sys.exit()
+    print "There already is a datapackage.json file here." 
+    print "I will save the result of this in datapackage-new.json."
+    print
 
 # Title
 title = raw_input("What's the title for this data package? ")
@@ -111,6 +111,10 @@ output_json = dp.to_json()
 j = json.loads(output_json)
 out = json.dumps(j, ensure_ascii=False, encoding='utf-8', indent=2)
 
-with codecs.open('datapackage-test.json', 'w', 'utf-8') as f:
+if not os.path.exists('datapackage.json'):
+    outfilename = 'datapackage.json'
+else
+    outfilename = 'datapackage-new.json
+with codecs.open('datapackage-new.json', 'w', 'utf-8') as f:
   f.write(out)
 
