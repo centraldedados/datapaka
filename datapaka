@@ -16,31 +16,94 @@ import glob
 
 dp = datapackage.DataPackage()
 
+# Splash screen :3
+print '''
+   ___    ___
+   \__\__/__/  Datapaka!
+   | ._. |  |  Let's package this data!
+   |_____|__| 
+ '''
+
+# Does data/ exist?
 if not os.path.exists('data') or not os.path.isdir('data'):
     print "The data/ directory does not exist, can't do much here."
+    print "Please create it and place some CSV files inside, then call me again."
+    print
     sys.exit()
+    
+# Does datapackage.json exist?
+if os.path.exists('datapackage.json'):
+    result = raw_input("There already is a datapackage.json file. Delete and create new? [n] ")
+    if result not in ("y", "Y"):
+        sys.exit()
 
+# Title
 title = raw_input("What's the title for this data package? ")
 dp.descriptor['title'] = title
 
+# Slug ("name" field)
 default_slug = title.lower().replace(' ', '-')
 slug = raw_input("What's the slug? [%s] " % default_slug)
 dp.descriptor['name'] = slug or default_slug
-print dp.descriptor['name']
 
-'''
+# Description
+dp.descriptor['description'] = raw_input("Give me a short, human description for this data package: ")
+
+# Version
+default_version = "0.1.0"
+version = raw_input("What's the package version? [%s] " % default_version)
+dp.descriptor['version'] = version or default_version
+
+# License
+default_license = "PDDL-1.0"
+license = raw_input("What's the package license? [%s] " % default_license)
+dp.descriptor['license'] = license or default_license
+
+# Sources
+dp.descriptor['sources'] = []
+another = True
+while another:
+    source_name = raw_input("Source name? ")
+    source_url = raw_input("Source URL? ")
+    dp.descriptor['sources'].append({"name": source_name, "web": source_url})
+    add_another = raw_input("Add another source? [n]")
+    if add_another not in ("y", "Y"):
+        another = False
+
+# CSV files
+
+# CSV files
+#   title
+#   field descriptions
+dp.descriptor['resources'] = []
 csv_files = glob.glob('data/*.csv')
-
+print "Found %d CSV files in the data/ dir." % len(csv_files)
+print
 for filepath in csv_files:
+    print "%s" % filepath
+    default_slug = filepath.split("/")[-1].split(".")[0]
+    slug = raw_input("  Slug for this file? [%s]" % default_slug)
+    resource_name = slug or default_slug
     with io.open(filepath) as stream:
         headers = stream.readline().rstrip('\n').split(',')
         values = csv.reader(stream)
+        
         schema = infer(headers, values)
-        dp.descriptor['resources'] = [
+        fields = []
+        for field in schema:
+            fieldname = field['name']
+            field['title'] = raw_input("  Human title for field '%s'? " % fieldname)
+            field['description'] = raw_input("  Short description for field '%s'? " % fieldname)
+            fields.append(field)
+        
+        dp.descriptor['resources'].append(
             {
-                'name': 'data',
+                'name': resource_name,
                 'path': filepath,
-                'schema': schema
+                'schema': fields
             }
-        ]
-'''
+        )
+
+with open('datapackage-test.json', 'w') as f:
+  f.write(dp.to_json())
+
