@@ -34,7 +34,7 @@ if not os.path.exists('data') or not os.path.isdir('data'):
     
 # Does datapackage.json exist?
 if os.path.exists('datapackage.json'):
-    result = raw_input("There already is a datapackage.json file. Delete and create new? [n] ")
+    result = raw_input("There already is a datapackage.json file. Delete and create new? [y] or [n] ")
     if result not in ("y", "Y"):
         sys.exit()
 
