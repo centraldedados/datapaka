@@ -8,7 +8,7 @@ from jsontableschema import infer
 import glob
 import json
 
-'''Initial check:
+'''
 - do we have a data/ directory?
 - does it have CSV files?
 - does it have JSON files?
@@ -22,7 +22,7 @@ print '''
    ___    ___
    \__\__/__/  Datapaka!
    | ._. |  |  Let's package this data!
-   |_____|__| 
+   |_____|__|
  '''
 
 # Does data/ exist?
@@ -31,10 +31,10 @@ if not os.path.exists('data') or not os.path.isdir('data'):
     print "Please create it and place some CSV files inside, then call me again."
     print
     sys.exit()
-    
+
 # Does datapackage.json exist?
 if os.path.exists('datapackage.json'):
-    print "There already is a datapackage.json file here." 
+    print "There already is a datapackage.json file here."
     print "I will save the result of this in datapackage-new.json."
     print
 
@@ -72,10 +72,6 @@ while another:
         another = False
 
 # CSV files
-
-# CSV files
-#   title
-#   field descriptions
 dp.descriptor['resources'] = []
 csv_files = glob.glob('data/*.csv')
 print
@@ -98,7 +94,7 @@ for filepath in csv_files:
             field['title'] = raw_input("  Human title for field '%s'? " % fieldname)
             field['description'] = raw_input("  Short description for field '%s'? " % fieldname)
             fields.append(field)
-        
+
         dp.descriptor['resources'].append(
             {
                 'name': resource_name,
