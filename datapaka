@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+import datapackage
+import os
+import sys
+import io
+import csv
+from jsontableschema import infer
+import glob
+
+'''Initial check:
+- do we have a data/ directory?
+- does it have CSV files?
+- does it have JSON files?
+- does it have files with other types?
+'''
+
+dp = datapackage.DataPackage()
+
+if not os.path.exists('data') or not os.path.isdir('data'):
+    print "The data/ directory does not exist, can't do much here."
+    sys.exit()
+
+title = raw_input("What's the title for this data package? ")
+dp.descriptor['title'] = title
+
+default_slug = title.lower().replace(' ', '-')
+slug = raw_input("What's the slug? [%s] " % default_slug)
+dp.descriptor['name'] = slug or default_slug
+print dp.descriptor['name']
+
+'''
+csv_files = glob.glob('data/*.csv')
+
+for filepath in csv_files:
+    with io.open(filepath) as stream:
+        headers = stream.readline().rstrip('\n').split(',')
+        values = csv.reader(stream)
+        schema = infer(headers, values)
+        dp.descriptor['resources'] = [
+            {
+                'name': 'data',
+                'path': filepath,
+                'schema': schema
+            }
+        ]
+'''
