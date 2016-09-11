@@ -1,0 +1,2 @@
+datapackage==0.8.1
+colorama==0.3.7
