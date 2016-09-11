@@ -15,15 +15,17 @@ import json
 - does it have files with other types?
 '''
 
+from colorama import init, Fore, Back, Style
+init(autoreset=True)
+
 dp = datapackage.DataPackage()
 
 # Splash screen :3
-print '''
-   ___    ___
-   \__\__/__/  Datapaka!
-   | ._. |  |  Let's package this data!
-   |_____|__|
- '''
+print Fore.YELLOW + "   ___    ___  "
+print Fore.YELLOW + "   \__\__/__/  " + Fore.RESET + "Datapaka!"
+print Fore.YELLOW + "   | ._. |  |  " + Fore.RESET + "Let's package this data!"
+print Fore.YELLOW + "   |_____|__|  "
+print
 
 # Does data/ exist?
 if not os.path.exists('data') or not os.path.isdir('data'):
@@ -35,39 +37,49 @@ if not os.path.exists('data') or not os.path.isdir('data'):
 # Does datapackage.json exist?
 if os.path.exists('datapackage.json'):
     print "There already is a datapackage.json file here."
-    print "I will save the result of this in datapackage-new.json."
+    print "I will save the result of this in " + Style.BRIGHT + "datapackage-new.json" + Style.RESET_ALL + "."
     print
 
 # Title
-title = raw_input("What's the title for this data package? ")
-dp.descriptor['title'] = title
+print "What's the " + Style.BRIGHT + "title" + Style.RESET_ALL + " for this data package?"
+print Style.DIM + "A title is a concise descriptor of what's in the data package, in human terms. 'Housing Prices in Berlin' or 'World Population Density' are good titles. (optional field)"
+"What's the " + Style.BRIGHT + "title" + Style.RESET_ALL + " for this data package?"
+dp.descriptor['title'] = raw_input(Style.BRIGHT + "? ")
 
 # Slug ("name" field)
-default_slug = title.lower().replace(' ', '-')
-slug = raw_input("What's the slug? [%s] " % default_slug)
-dp.descriptor['name'] = slug or default_slug
+default_slug = dp.descriptor['title'].lower().replace(' ', '-')
+print "What's the " + Style.BRIGHT + "slug" + Style.RESET_ALL + " for this data package? [Leave blank for '%s']" % default_slug
+print Style.DIM + "A slug ('name' field) is a lower-case, no spaces version of the title. Use hyphens or underscores instead of spaces. 'berlin-housing-prices' or 'world-population-density' are good slugs."
+dp.descriptor['name'] = raw_input(Style.BRIGHT + "? ") or default_slug
 
 # Description
-dp.descriptor['description'] = raw_input("Give me a short, human description for this data package: ")
+print "Give me a short, human " + Style.BRIGHT + "description" + Style.RESET_ALL + " for this data package."
+print Style.DIM + "A description gives more information about what's inside. 'Property prices in Berlin in April 2015' or 'UN population density statistics for the 2003-2013 period' let people know more specific details. (optional field)"
+dp.descriptor['description'] = raw_input(Style.BRIGHT + "? ")
 
 # Version
 default_version = "0.1.0"
-version = raw_input("What's the package version? [%s] " % default_version)
-dp.descriptor['version'] = version or default_version
+print "What's the package " + Style.BRIGHT + "version number" + Style.RESET_ALL + "? [Leave blank for '%s']" % default_version
+print Style.DIM + "The version number tracks changes and improvements on the data package. If you're starting a new one, go with the default value of 0.1.0, and update it whenever there is a change in the data layout."
+dp.descriptor['version'] = raw_input(Style.BRIGHT + "? ") or default_version
 
 # License
 default_license = "PDDL-1.0"
-license = raw_input("What's the package license? [%s] " % default_license)
-dp.descriptor['license'] = license or default_license
+print "What's the package " + Style.BRIGHT + "license" + Style.RESET_ALL + "? [Leave blank for '%s'] " % default_license
+print Style.DIM + "The license field is the identifier for the license this package is to be published under. We'll have a better menu to pick licenses, but in the meantime you can find the license identifiers at http://licenses.opendefinition.org/. The default is the Public Domain Dedication License."
+dp.descriptor['license'] = raw_input(Style.BRIGHT + "? ") or default_license
 
 # Sources
 dp.descriptor['sources'] = []
 another = True
+print "Now I want to know about the " + Style.BRIGHT + "sources" + Style.RESET_ALL + " of your data."
+print Style.DIM + "I will ask you the name and URL for each, and then you'll be asked if you want to input another source or move ahead."
 while another:
-    source_name = raw_input("Source name? ")
-    source_url = raw_input("Source URL? ")
+    source_name = raw_input(Style.BRIGHT + "Source name? ")
+    source_url = raw_input(Style.BRIGHT + "Source URL? ")
     dp.descriptor['sources'].append({"name": source_name, "web": source_url})
-    add_another = raw_input("Add another source? [n]")
+    print
+    add_another = raw_input(Style.BRIGHT + "Add another source? [n]")
     if add_another not in ("y", "Y"):
         another = False
 
@@ -75,10 +87,16 @@ while another:
 dp.descriptor['resources'] = []
 csv_files = glob.glob('data/*.csv')
 print
-print "Found %d CSV files in the data/ dir." % len(csv_files)
+if len(csv_files) == 1:
+    print "Found a single CSV file in the data/ dir. Easy!"
+elif len(csv_files) != 0:
+    print "Found %d CSV files in the data/ dir." % len(csv_files)
+else:
+    print "No CSV files found! I currently can't handle anything other than CSV. They'll fix me soon!"
+
 for filepath in csv_files:
     print
-    print "%s" % filepath
+    print "Let's now look at " + Style.BRIGHT + filepath + Style.RESET_ALL + "..."
     default_slug = filepath.split("/")[-1].split(".")[0]
     slug = raw_input("  Slug for this file? [%s]" % default_slug)
     resource_name = slug or default_slug
@@ -109,8 +127,8 @@ out = json.dumps(j, ensure_ascii=False, encoding='utf-8', indent=2)
 
 if not os.path.exists('datapackage.json'):
     outfilename = 'datapackage.json'
-else
-    outfilename = 'datapackage-new.json
+else:
+    outfilename = 'datapackage-new.json'
 with codecs.open('datapackage-new.json', 'w', 'utf-8') as f:
-  f.write(out)
+    f.write(out)
 
