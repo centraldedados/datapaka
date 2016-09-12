@@ -121,9 +121,7 @@ for filepath in csv_files:
             }
         )
 
-output_json = dp.to_json()
-j = json.loads(output_json)
-out = json.dumps(j, ensure_ascii=False, encoding='utf-8', indent=2)
+out = json.dumps(dp.to_dict(), ensure_ascii=False, encoding='utf-8', indent=2)
 
 if not os.path.exists('datapackage.json'):
     outfilename = 'datapackage.json'
