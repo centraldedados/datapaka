@@ -130,4 +130,4 @@ else:
 with codecs.open('datapackage-new.json', 'w', 'utf-8') as f:
     f.write(out)
 
-print "All done! File saved as " + Style.BRIGHT + outfile + Style.RESET_ALL + ". Ta!"
+print "All done! File saved as " + Style.BRIGHT + outfilename + Style.RESET_ALL + ". Ta!"
