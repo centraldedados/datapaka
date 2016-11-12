@@ -8,8 +8,6 @@
 Datapaka is a command-line utility made to ease the process of creating
 `datapackage.json` files by asking the user for the values to use.
 
-It's still very bare-bones, but can already be used to bootstrap data packages.
-
 
 ## Installation
 
@@ -32,7 +30,8 @@ Otherwise you can symlink it in `/usr/local/bin`, which requires root privileges
 
 ## Usage
 
-Datapaka works inside the directory of your new data package. 
+Datapaka works inside the directory of your new data package. It will look for a 
+`data/` directory inside and check its contents.
 
     cd new-data-package
     datapaka
