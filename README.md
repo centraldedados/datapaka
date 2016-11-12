@@ -8,6 +8,7 @@
 Datapaka is a command-line utility made to ease the process of creating
 `datapackage.json` files by asking the user for the values to use.
 
+[![asciicast](https://asciinema.org/a/0sgejyz5dk0nkcy2iw16nvzpt.png)](https://asciinema.org/a/0sgejyz5dk0nkcy2iw16nvzpt)
 
 ## Installation
 
