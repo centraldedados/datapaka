@@ -113,7 +113,7 @@ while another:
     source_url = raw_input(Style.BRIGHT + "Source URL? ")
     dp.descriptor['sources'].append({"name": source_name, "web": source_url})
     print
-    add_another = raw_input(Style.BRIGHT + "Add another source? [n]")
+    add_another = raw_input(Style.BRIGHT + "Add another source? [n] ")
     if add_another not in ("y", "Y"):
         another = False
 
@@ -134,7 +134,7 @@ while another:
         c["web"] = contrib_url
     dp.descriptor['contributors'].append(c)
     print
-    add_another = raw_input(Style.BRIGHT + "Add another contributor? [n]")
+    add_another = raw_input(Style.BRIGHT + "Add another contributor? [n] ")
     if add_another not in ("y", "Y"):
         another = False
 
