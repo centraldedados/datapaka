@@ -43,12 +43,3 @@ need to call the `datapaka` script using its full path, e.g.
 
     cd new-data-package
     ~/repos/datapaka/datapaka
-
-
-## TODO
-
-* Arguments!
-  - create blank datapackage.json without interaction, guessing values where reasonable
-  - validate existing datapackage.json using the `datapackage` module
-  - overwrite existing datapackage.json
-* When present, read existing datapackage.json and use its values as the default
