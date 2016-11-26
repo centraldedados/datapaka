@@ -8,6 +8,7 @@ from jsontableschema import infer
 import glob
 import json
 from collections import OrderedDict
+from prompts import prompts
 
 '''
 - do we have a data/ directory?
@@ -19,6 +20,15 @@ from collections import OrderedDict
 from colorama import init, Fore, Back, Style
 init(autoreset=True)
 
+
+def print_prompts(name, format_strings=None):
+    '''Print the prompt messages according to the list in prompts.py.'''
+    print("")
+    for line in prompts[name]:
+        if format_strings and ("%s" in line or "%d" in line):
+            print(line % format_strings)
+        else:
+            print(line)
 
 # ensure we get the output in fixed order by specifying the descriptor argument
 dp = datapackage.DataPackage(descriptor=OrderedDict())
@@ -45,69 +55,42 @@ if os.path.exists('datapackage.json'):
     print
 
 # Title
-print
-print "What's the " + Style.BRIGHT + "title" + Style.RESET_ALL + " for this data package?"
-print Style.DIM + "A title is a concise descriptor of what's in the data package, in human terms. 'Housing Prices in Berlin' or 'World Population Density' are good titles. (optional field)"
-"What's the " + Style.BRIGHT + "title" + Style.RESET_ALL + " for this data package?"
+print_prompts('title')
 dp.descriptor['title'] = raw_input(Style.BRIGHT + "? ")
 
 # Slug ("name" field)
 default_slug = dp.descriptor['title'].lower().replace(' ', '-')
-print
-print "What's the " + Style.BRIGHT + "slug" + Style.RESET_ALL + " for this data package? [Leave blank for '%s']" % default_slug
-print Style.DIM + "A slug ('name' field) is a lower-case, no spaces version of the title. Use hyphens or underscores instead of spaces. 'berlin-housing-prices' or 'world-population-density' are good slugs."
+if not dp.descriptor['title']:
+    print_prompts('slug_notitle')
+else:
+    print_prompts('slug', default_slug)
 dp.descriptor['name'] = raw_input(Style.BRIGHT + "? ") or default_slug
 
 # Description
-print
-print "Give me a short, human " + Style.BRIGHT + "description" + Style.RESET_ALL + " for this data package."
-print Style.DIM + "A description gives more information about what's inside. 'Property prices in Berlin in April 2015' or 'UN population density statistics for the 2003-2013 period' let people know more specific details. Markdown formatting can be used. (optional field)"
+print_prompts('description')
 dp.descriptor['description'] = raw_input(Style.BRIGHT + "? ")
 
 # Version
 default_version = "0.1.0"
-print
-print "What's the package " + Style.BRIGHT + "version number" + Style.RESET_ALL + "? [Leave blank for '%s']" % default_version
-print Style.DIM + "The version number tracks changes and improvements on the data package. If you're starting a new one, go with the default value of 0.1.0, and update it whenever there is a change in the data layout."
+print_prompts('version', default_version)
 dp.descriptor['version'] = raw_input(Style.BRIGHT + "? ") or default_version
 
 # Homepage
-print
-print "What's the " + Style.BRIGHT + "homepage" + Style.RESET_ALL + " for this data package?"
-print Style.DIM + "Please include the 'http://' prefix. (optional field)"
+print_prompts('homepage')
 h = raw_input(Style.BRIGHT + "? ")
 if h:
     dp.descriptor['homepage'] = h
 
 # License
 default_license = "1"
-license_options = {
-    "1": "ODC-PDDL-1.0",
-    "2": "ODbL-1.0",
-    "3": "ODC-BY-1.0",
-    "4": "CC0-1.0",
-    "5": "CC-BY-4.0",
-    "6": "CC-BY-SA-4.0",
-}
-print
-print "What's the package " + Style.BRIGHT + "license" + Style.RESET_ALL + "? [Leave blank for '%s'] " % default_license
-print Style.DIM + "The license field states the license under which this package is to be published. Read more about each license at http://opendefinition.org/licenses/."
-print
-print('1) Public Domain Dedication and License (public domain)')
-print('2) Open Database License (attribution, sharealike)')
-print('3) Open Data Commons Attribution License (attribution)')
-print('4) Creative Commons Zero (public domain)')
-print('5) Creative Commons Attribution')
-print('6) Creative Commons Attribution-ShareAlike')
+print_prompts('license', default_license)
 selected = raw_input(Style.BRIGHT + "? ") or default_license
-dp.descriptor['license'] = license_options[selected.strip()]
+dp.descriptor['license'] = prompts['license_options'][selected.strip()]
 
 # Sources
 dp.descriptor['sources'] = []
+print_prompts('sources_intro')
 another = True
-print
-print "Now I want to know about the " + Style.BRIGHT + "sources" + Style.RESET_ALL + " of your data."
-print Style.DIM + "I will ask you the name and URL for each, and then you'll be asked if you want to input another source or move ahead."
 while another:
     source_name = raw_input(Style.BRIGHT + "Source name? ")
     source_url = raw_input(Style.BRIGHT + "Source URL? ")
@@ -119,10 +102,8 @@ while another:
 
 # Contributors
 dp.descriptor['contributors'] = []
+print_prompts('contributors_intro')
 another = True
-print
-print "Now I want to know about the " + Style.BRIGHT + "contributors" + Style.RESET_ALL + " of this data package."
-print Style.DIM + "I will ask you the name, e-mail and website URL for each, and then you'll be asked if you want to input another contributor or move ahead."
 while another:
     contrib_name = raw_input(Style.BRIGHT + "Contributor name? ")
     contrib_email = raw_input(Style.BRIGHT + "Contributor e-mail (optional)? ")
@@ -139,9 +120,7 @@ while another:
         another = False
 
 # Keywords
-print
-print "Tell me some " + Style.BRIGHT + "keywords" + Style.RESET_ALL + " (tags) for this package so that users can find it in catalogs. [optional]"
-print Style.DIM + "Keywords can have spaces; separate distinct keywords with commas."
+print_prompts('keywords')
 k = raw_input(Style.BRIGHT + "? ")
 if k:
     dp.descriptor['keywords'] = [w.strip() for w in k.split(",")]
