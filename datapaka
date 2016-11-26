@@ -13,7 +13,8 @@ from messages import messages, print_message, license_options
 init(autoreset=True)
 
 
-# None = optional value
+# These are the default values that will be used if no response is given
+# None = optional value.
 defaults = {
     "description": None,
     "version": "0.1.0",
@@ -21,7 +22,6 @@ defaults = {
     "homepage": None,
     "keywords": None,
 }
-
 
 # create the DataPackage instance
 # ensure we get the output in fixed order by specifying the descriptor argument
@@ -74,6 +74,7 @@ if not os.path.exists('data') or not os.path.isdir('data'):
 if os.path.exists('datapackage.json'):
     print_message('info_exists')
 
+# Ask user for each field
 get_response('title')
 get_response('slug', field_name='name', default_value=dp.descriptor['title'].lower().replace(' ', '-'))
 get_response('description')
@@ -117,7 +118,6 @@ while another:
             another = False
     else:
         another = False
-
 
 
 # CSV files
@@ -166,4 +166,4 @@ else:
 with codecs.open(outfilename, 'w', 'utf-8') as f:
     f.write(out)
 
-print "All done! File saved as " + Style.BRIGHT + outfilename + Style.RESET_ALL + ". Ta!"
+print_message("done", outfilename)

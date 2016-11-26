@@ -71,6 +71,9 @@ messages = {
         "This field is required!",
     ],
     "question_prompt": Style.BRIGHT + "? ",
+    "done": [
+        "All done! File saved as " + BRIGHT + "%s" + RESET + ". Ta!",
+    ],
 
     "splash": [  # Initial "splash screen"
         "",
