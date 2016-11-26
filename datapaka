@@ -108,15 +108,18 @@ while another:
     contrib_name = raw_input(Style.BRIGHT + "Contributor name? ")
     contrib_email = raw_input(Style.BRIGHT + "Contributor e-mail (optional)? ")
     contrib_url = raw_input(Style.BRIGHT + "Contributor URL (optional)? ")
-    c = {"name": contrib_name}
+    c = {}
+    if contrib_name:
+        c["name"] = contrib_name
     if contrib_email:
         c["email"] = contrib_email
     if contrib_url:
         c["web"] = contrib_url
-    dp.descriptor['contributors'].append(c)
-    print
-    add_another = raw_input(Style.BRIGHT + "Add another contributor? [n] ")
-    if add_another not in ("y", "Y"):
+    if c:
+        add_another = raw_input(Style.BRIGHT + "Add another contributor? [n] ")
+        if add_another not in ("y", "Y"):
+            another = False
+    else:
         another = False
 
 # Keywords
