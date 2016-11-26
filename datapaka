@@ -8,92 +8,88 @@ from jsontableschema import infer
 import glob
 import json
 from collections import OrderedDict
-from prompts import prompts
-
-'''
-- do we have a data/ directory?
-- does it have CSV files?
-- does it have JSON files?
-- does it have files with other types?
-'''
-
-from colorama import init, Fore, Back, Style
+from colorama import init, Style
+from messages import messages, print_message, license_options
 init(autoreset=True)
 
 
-def print_prompts(name, format_strings=None):
-    '''Print the prompt messages according to the list in prompts.py.'''
-    print("")
-    for line in prompts[name]:
-        if format_strings and ("%s" in line or "%d" in line):
-            print(line % format_strings)
-        else:
-            print(line)
+# None = optional value
+defaults = {
+    "description": None,
+    "version": "0.1.0",
+    "license": "1",  # PDDL
+    "homepage": None,
+    "keywords": None,
+}
 
+
+# create the DataPackage instance
 # ensure we get the output in fixed order by specifying the descriptor argument
 dp = datapackage.DataPackage(descriptor=OrderedDict())
 
+
+def get_response(name, field_name=None, default_value=None):
+    '''Presents a prompt and processes the user response for property `name`.'''
+    global dp
+    if field_name:
+        d = field_name
+    else:
+        d = name
+    if name in messages:
+        if default_value:
+            print_message(name, default_value)
+        elif name in defaults:
+            print_message(name, defaults[name])
+        else:
+            print_message(name)
+    response = raw_input(messages["question_prompt"])
+    if response:
+        dp.descriptor[d] = response
+    else:
+        if default_value:
+            dp.descriptor[d] = default_value
+        elif name in defaults:
+            if defaults[name] is None:
+                # optional field
+                pass
+            else:
+                dp.descriptor[d] = defaults[name]
+        else:
+            # no default value = mandatory field
+            print_message("required_field")
+            get_response(name, field_name)
+    # parse license option
+    if name == "license":
+        dp.descriptor["license"] = license_options[dp.descriptor["license"]]
+
 # Splash screen :3
-print
-print Fore.YELLOW + "   ___    ___  "
-print Fore.YELLOW + "   \__\__/__/  " + Fore.RESET + "Datapaka!"
-print Fore.YELLOW + "   | ._. |  |  " + Fore.RESET + "Let's package this data!"
-print Fore.YELLOW + "   |_____|__|  "
-print
+print_message('splash')
 
 # Does data/ exist?
 if not os.path.exists('data') or not os.path.isdir('data'):
-    print "The data/ directory does not exist, can't do much here."
-    print "Please create it and place some CSV files inside, then call me again."
-    print
+    print_message('error_nodatadir')
     sys.exit()
 
 # Does datapackage.json exist?
 if os.path.exists('datapackage.json'):
-    print "There already is a datapackage.json file here."
-    print "I will save the result of this in " + Style.BRIGHT + "datapackage-new.json" + Style.RESET_ALL + "."
-    print
+    print_message('info_exists')
 
-# Title
-print_prompts('title')
-dp.descriptor['title'] = raw_input(Style.BRIGHT + "? ")
-
-# Slug ("name" field)
-default_slug = dp.descriptor['title'].lower().replace(' ', '-')
-if not dp.descriptor['title']:
-    print_prompts('slug_notitle')
-else:
-    print_prompts('slug', default_slug)
-dp.descriptor['name'] = raw_input(Style.BRIGHT + "? ") or default_slug
-
-# Description
-print_prompts('description')
-dp.descriptor['description'] = raw_input(Style.BRIGHT + "? ")
-
-# Version
-default_version = "0.1.0"
-print_prompts('version', default_version)
-dp.descriptor['version'] = raw_input(Style.BRIGHT + "? ") or default_version
-
-# Homepage
-print_prompts('homepage')
-h = raw_input(Style.BRIGHT + "? ")
-if h:
-    dp.descriptor['homepage'] = h
-
-# License
-default_license = "1"
-print_prompts('license', default_license)
-selected = raw_input(Style.BRIGHT + "? ") or default_license
-dp.descriptor['license'] = prompts['license_options'][selected.strip()]
+get_response('title')
+get_response('slug', field_name='name', default_value=dp.descriptor['title'].lower().replace(' ', '-'))
+get_response('description')
+get_response('version')
+get_response('homepage')
+get_response('license')
+get_response('keywords')
 
 # Sources
 dp.descriptor['sources'] = []
-print_prompts('sources_intro')
+print_message('sources_intro')
 another = True
 while another:
     source_name = raw_input(Style.BRIGHT + "Source name? ")
     source_url = raw_input(Style.BRIGHT + "Source URL? ")
+    s = {}
     dp.descriptor['sources'].append({"name": source_name, "web": source_url})
     print
     add_another = raw_input(Style.BRIGHT + "Add another source? [n] ")
@@ -102,7 +98,7 @@ while another:
 
 # Contributors
 dp.descriptor['contributors'] = []
-print_prompts('contributors_intro')
+print_message('contributors_intro')
 another = True
 while another:
     contrib_name = raw_input(Style.BRIGHT + "Contributor name? ")
@@ -122,11 +118,6 @@ while another:
     else:
         another = False
 
-# Keywords
-print_prompts('keywords')
-k = raw_input(Style.BRIGHT + "? ")
-if k:
-    dp.descriptor['keywords'] = [w.strip() for w in k.split(",")]
 
 
 # CSV files
