@@ -125,22 +125,22 @@ dp.descriptor['resources'] = []
 csv_files = glob.glob('data/*.csv')
 print
 if len(csv_files) == 1:
-    print "Found a single CSV file in the data/ dir. Easy!"
+    print("Found a single CSV file in the data/ dir. Easy!")
 elif len(csv_files) != 0:
-    print "Found %d CSV files in the data/ dir." % len(csv_files)
+    print("Found %d CSV files in the data/ dir.") % len(csv_files)
 else:
-    print "No CSV files found! I currently can't handle anything other than CSV. They'll fix me soon!"
+    print("No CSV files found! I currently can't handle anything other than CSV. They'll fix me soon!")
 
 for filepath in csv_files:
     print
-    print "Let's now look at " + Style.BRIGHT + filepath + Style.RESET_ALL + "..."
+    print("Let's now look at " + Style.BRIGHT + filepath + Style.RESET_ALL + "...")
     default_slug = filepath.split("/")[-1].split(".")[0]
     slug = raw_input("  Slug for this file? [%s]" % default_slug)
     resource_name = slug or default_slug
     with open(filepath, 'rb') as f:
         headers = [s.decode("utf-8") for s in f.readline().rstrip('\n').split(',')]
         values = csv.reader(f, encoding="utf-8")
-        print "  Inferring column types, this might take a bit..."
+        print("  Inferring column types, this might take a bit...")
         schema = infer(headers, values)
         fields = []
         for field in schema['fields']:
