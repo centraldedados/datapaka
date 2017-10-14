@@ -42,7 +42,7 @@ def get_response(name, field_name=None, default_value=None):
             print_message(name, defaults[name])
         else:
             print_message(name)
-    response = raw_input(messages["question_prompt"])
+    response = input(messages["question_prompt"])
     if response:
         dp.descriptor[d] = response
     else:
@@ -88,12 +88,12 @@ dp.descriptor['sources'] = []
 print_message('sources_intro')
 another = True
 while another:
-    source_name = raw_input(Style.BRIGHT + "Source name? ")
-    source_url = raw_input(Style.BRIGHT + "Source URL? ")
+    source_name = input(Style.BRIGHT + "Source name? ")
+    source_url = input(Style.BRIGHT + "Source URL? ")
     s = {}
     dp.descriptor['sources'].append({"name": source_name, "web": source_url})
     print
-    add_another = raw_input(Style.BRIGHT + "Add another source? [n] ")
+    add_another = input(Style.BRIGHT + "Add another source? [n] ")
     if add_another not in ("y", "Y"):
         another = False
 
@@ -102,9 +102,9 @@ dp.descriptor['contributors'] = []
 print_message('contributors_intro')
 another = True
 while another:
-    contrib_name = raw_input(Style.BRIGHT + "Contributor name? ")
-    contrib_email = raw_input(Style.BRIGHT + "Contributor e-mail (optional)? ")
-    contrib_url = raw_input(Style.BRIGHT + "Contributor URL (optional)? ")
+    contrib_name = input(Style.BRIGHT + "Contributor name? ")
+    contrib_email = input(Style.BRIGHT + "Contributor e-mail (optional)? ")
+    contrib_url = input(Style.BRIGHT + "Contributor URL (optional)? ")
     c = {}
     if contrib_name:
         c["name"] = contrib_name
@@ -113,7 +113,7 @@ while another:
     if contrib_url:
         c["web"] = contrib_url
     if c:
-        add_another = raw_input(Style.BRIGHT + "Add another contributor? [n] ")
+        add_another = input(Style.BRIGHT + "Add another contributor? [n] ")
         if add_another not in ("y", "Y"):
             another = False
     else:
@@ -135,7 +135,7 @@ for filepath in csv_files:
     print
     print("Let's now look at " + Style.BRIGHT + filepath + Style.RESET_ALL + "...")
     default_slug = filepath.split("/")[-1].split(".")[0]
-    slug = raw_input("  Slug for this file? [%s]" % default_slug)
+    slug = input("  Slug for this file? [%s]" % default_slug)
     resource_name = slug or default_slug
     with open(filepath, 'rb') as f:
         headers = [s.decode("utf-8") for s in f.readline().rstrip('\n').split(',')]
@@ -145,8 +145,8 @@ for filepath in csv_files:
         fields = []
         for field in schema['fields']:
             fieldname = field['name']
-            field['title'] = raw_input("  Human title for field '%s'? " % fieldname)
-            field['description'] = raw_input("  Short description for field '%s'? " % fieldname)
+            field['title'] = input("  Human title for field '%s'? " % fieldname)
+            field['description'] = input("  Short description for field '%s'? " % fieldname)
             fields.append(field)
 
         dp.descriptor['resources'].append(
